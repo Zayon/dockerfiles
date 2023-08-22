@@ -1,0 +1,25 @@
+name: RSS Release Notification
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  notify-on-release:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Check for Updates
+        id: check_updates
+        run: php tiddly-pwa/check_updates.php >> "$GITHUB_OUTPUT"
+
+      - name: Create Issue
+        if: steps.check_updates.outputs.new_release == 'true'
+        run: |
+          gh issue create --title "New Tiddly PWA release detected: ${{ steps.check_updates.outputs.release_title }}" --body "${{ steps.check_updates.outputs.issue_body }}"
+
