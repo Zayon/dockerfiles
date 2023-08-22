@@ -1,23 +1,30 @@
 define docker_build_and_push
-	docker buildx build \
-		--push \
-		-t "zayon/$1:$(if $2,$2,$(TAG))" \
-		./$1
+	$(eval export PUSH=--push) $(call docker_build,$1,$2)
+endef
+
+define docker_build_local
+	$(eval export ADDITIONAL_TAG=-t "zayon/$1:local" ) $(call docker_build,$1,$2)
 endef
 
 define docker_build
 	docker buildx build \
-		-t "zayon/$1:$(if $2,$2,$(TAG))" \
+		$(PUSH) \
+		-t "zayon/$1:latest" \
+		-t "zayon/$1:$2" \
+		$(ADDITIONAL_TAG) \
+		$(ADDITIONAL_BUILD_ARGS) \
 		./$1
 endef
 
 .PHONY: build-tiddly-pwa
-build-tiddly-pwa: ## Build tiddly-pwa docker image
-	$(call docker_build,tiddly-pwa,local)
+build-tiddly-pwa: ## Build tiddly-pwa docker image, use TAG=x.x.x to define tiddly-pwa version
+	$(eval export ADDITIONAL_BUILD_ARGS=--build-arg TIDDLY_PWA_VERSION="$(TAG)") \
+	$(call docker_build_local,tiddly-pwa,$(TAG))
 
 .PHONY: push-tiddly-pwa
-push-tiddly-pwa: ## Push tiddly-pwa docker image, use TAG=latest to push to latest
-	$(call docker_build_and_push,tiddly-pwa)
+push-tiddly-pwa: ## Push tiddly-pwa docker image, use TAG=x.x.x to define tiddly-pwa version
+	$(eval export ADDITIONAL_BUILD_ARGS=--build-arg TIDDLY_PWA_VERSION="$(TAG)") \
+	$(call docker_build_and_push,tiddly-pwa,$(TAG))
 
 .DEFAULT_GOAL := help
 .PHONY: help

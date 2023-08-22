@@ -1,11 +1,13 @@
 FROM denoland/deno:alpine-1.36.1
 
+ARG TIDDLY_PWA_VERSION
+
 ENV DB_PATH=/var/db/tiddly/pwa.db
 
 WORKDIR /app
 
 RUN apk add --no-cache tini && \
-	wget https://codeberg.org/valpackett/tiddlypwa/archive/0.1.3.tar.gz -O - | tar -xz && \
+	wget https://codeberg.org/valpackett/tiddlypwa/archive/$TIDDLY_PWA_VERSION.tar.gz -O - | tar -xz && \
 	mv -t /app \
 		tiddlypwa/server/app.ts \
 		tiddlypwa/server/run.ts \

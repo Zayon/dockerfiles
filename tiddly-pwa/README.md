@@ -22,6 +22,21 @@ docker run --name tiddly-pwa -d \
     zayon/tiddly-pwa
 ```
 
+Or, if you prefer docker compose:
+
+```yaml
+services:
+    tiddly-pwa:
+        image: zayon/tiddly-pwa:0.1.4
+        container_name: tiddly-pwa
+        environment:
+            - ADMIN_PASSWORD_HASH=<replace with value>
+            - ADMIN_PASSWORD_SALT=<replace with value>
+        volumes:
+            - /path/to/db:/var/db/tiddly
+        restart: unless-stopped
+```
+
 ---
 
 [Back to home](https://github.com/Zayon/dockerfiles)
