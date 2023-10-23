@@ -45,18 +45,10 @@ if ($lastItem->title == $lastTag) {
     exit(0);
 }
 
-$issueBody = <<<EOF
-New release detected: [$lastItem->title]($lastItem->link)
-
-Please review the new release and take any necessary actions.
-EOF;
-
 echo <<<EOF
 new_release=true
 release_title=$lastItem->title
 release_link=$lastItem->link
-issue_body="""
-$issueBody
-"""
+issue_body=New release detected: $lastItem->link
 EOF;
 
